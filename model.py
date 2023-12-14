@@ -3,6 +3,7 @@ from datetime import date
 
 @dataclass
 class Instrument:
+    """Representing an instrument"""
     id: int
     brand: str
     rented_price_per_month: int
@@ -13,6 +14,7 @@ class Instrument:
 
 @dataclass
 class Rental:
+    """Representing a rental"""
     id: int
     start_date: date
     end_date: date

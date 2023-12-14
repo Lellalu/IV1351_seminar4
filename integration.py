@@ -4,6 +4,8 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime
 
 class InstrumentDAO:
+    """The class contains static method for SQL queries about instruments."""
+
     @staticmethod
     def read_available_instruments(database_cursor, instrument_kind):
         query = f"""\
@@ -66,10 +68,30 @@ WHERE instrument_stock.instrument_id = {instrument_id}
 """
         database_cursor.execute(decrease_instrument_stock_query)
 
-        
+    @staticmethod
+    def update_instrument_stock_by_insert(database_cursor, max_stock_id, instrument_id):
+        update_instrument_stock_by_insert_query = f"""\
+INSERT INTO instrument_stock(id, quantity, instrument_id) 
+VALUES({max_stock_id}, 1, {instrument_id})       
+"""
+        database_cursor.execute(update_instrument_stock_by_insert_query)
+
+    @staticmethod
+    def read_max_instrument_stock_id(database_cursor):
+        read_max_instrument_stock_id_query = """\
+SELECT id
+FROM instrument_stock
+ORDER BY id DESC
+LIMIT 1
+"""
+        database_cursor.execute(read_max_instrument_stock_id_query)
+        return database_cursor.fetchone()
 
 
 class RentalDAO:
+    """The class contains static method for SQL queries about rental."""
+
+
     @staticmethod
     def read_max_rental_id(database_cursor):
         read_max_rental_id_query = """\
@@ -100,13 +122,17 @@ VALUES ({rental_id},
 SELECT * FROM rental WHERE id = {rental_id} FOR UPDATE
 """
         database_cursor.execute(read_rental_end_date_query)
-        result = database_cursor.fetchone()
-        return model.Rental(id=int(result[0]),
-                            start_date=result[1],
-                            end_date=result[2],
-                            instrument_id=int(result[3]),
-                            student_id=int(result[4]),
-                            rental_policy_id=int(result[5]))
+        result = database_cursor.fetchall()
+
+        rental_list = []
+        for res in result:
+                rental_list.append(model.Rental(id=int(res[0]),
+                                                start_date=res[1],
+                                                end_date=res[2],
+                                                instrument_id=int(res[3]),
+                                                student_id=int(res[4]),
+                                                rental_policy_id=int(res[5])))
+        return rental_list
 
     @staticmethod
     def update_rental_to_terminate(database_cursor, rental_id):
@@ -117,8 +143,20 @@ WHERE id = {rental_id}
 """
         database_cursor.execute(update_rental_to_terminate_query)
         
+
+    @staticmethod
+    def read_instrument_id(database_cursor, rental_id):
+        read_instrument_id_query = f"""\
+SELECT instrument_id
+FROM rental
+WHERE id = {rental_id}
+"""
+        database_cursor.execute(read_instrument_id_query)
+        return database_cursor.fetchone()
+    
     
 
+    
         
 
         

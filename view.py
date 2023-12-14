@@ -6,7 +6,13 @@ from pprint import pprint
 
 def cli_input():
     parser = argparse.ArgumentParser("The command line interface for soundGood")
-    parser.add_argument('--type',
+    parser.add_argument('--host', 
+                        help='The database host.')
+    parser.add_argument('--database', 
+                        help='The database name.')
+    parser.add_argument('--user', 
+                        help='The database user.')
+    parser.add_argument('--query_type',
                         required=True,
                         choices=['list', 'rent', 'terminate'],
                         help='Choose between list, rent or terminate rentals.')
@@ -24,9 +30,9 @@ def cli_input():
     return args, password
 
 
-def output_row_result(model_list):
-    for element in model_list:
-        print(element)
+def output_instruments(instrument_list):
+    for instrument in instrument_list:
+        print(instrument)
 
 def output_message(message):
     print(message)
